@@ -1,0 +1,4 @@
+*.zip
+.classpath
+.settings
+.project
