@@ -42,16 +42,14 @@ object Main {
    * Exercise 3
    */
   def countChange(money: Int, coins: List[Int]): Int = {
-    def countChangeRecursive(accumulator: Int, money: Int, coins: List[Int]): Int = coins match {
-      case head :: tail => {
-        val result: Int = money % head
-        if (result == money) countChangeRecursive(accumulator, money, tail)
-        else if (result == 0) countChangeRecursive(accumulator+1, money, tail)
-        else accumulator + countChangeRecursive(accumulator, result, tail)
+    money match {
+      case 0          => 1
+      case m if m < 0 => 0
+      case _          => coins match {
+        case head :: tail => countChange(money, tail) + countChange(money - head, coins)
+        case Nil          => 0
       }
-      case Nil => accumulator
     }
-    countChangeRecursive(0, money, coins)
   }
 
 }
