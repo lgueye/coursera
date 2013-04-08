@@ -184,9 +184,9 @@ class FunSetSuite extends FunSuite {
       val s = map(union2, x => x * 2)
       assert(contains(s, 2), "map should contain 2 for element 1")
       assert(contains(s, 4), "map should contain 4 for element 2")
+      assert(contains(s, 6), "map should contain 6 for element 3")
       assert(!contains(s, 0), "map should not return 0 for element 0")
       assert(!contains(s, 8), "map should not return 8 for element 4")
-      assert(contains(s, 6), "map should contain 6 for element 3")
     }
   }
 }
