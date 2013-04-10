@@ -77,7 +77,7 @@ abstract class TweetSet {
    * Question: Should we implement this method here, or should it remain abstract
    * and be implemented in the subclasses?
    */
-  def descendingByRetweet: TweetList = ???
+  def descendingByRetweet: TweetList
 
   /**
    * The following methods are already implemented
@@ -114,6 +114,8 @@ class Empty extends TweetSet {
   def union(that: TweetSet): TweetSet = that
 
   def mostRetweeted: Tweet = throw new NoSuchElementException
+  
+  def descendingByRetweet: TweetList = Nil
 
   /**
    * The following methods are already implemented
@@ -139,16 +141,31 @@ class NonEmpty(elem: Tweet, left: TweetSet, right: TweetSet) extends TweetSet {
   def union(that: TweetSet): TweetSet = left.union(right.union(that)).incl(elem)
 
   def mostRetweeted: Tweet = {
-    val evalLeft = left.mostRetweeted
-    val evalRight = right.mostRetweeted
+    val evalLeft = left match {
+      case evalLeft:Empty => elem
+      case evalLeft:NonEmpty => left.mostRetweeted
+    }
+    val evalRight = right match {
+      case evalLeft:Empty => elem
+      case evalLeft:NonEmpty => right.mostRetweeted
+    }
     if (evalLeft.retweets > evalRight.retweets && evalLeft.retweets > elem.retweets) evalLeft
     else if (evalRight.retweets > evalLeft.retweets && evalRight.retweets > elem.retweets) evalRight
     else elem
   }
-  
-  def mostRetweetedAcc(tweets:TweetSet, acc:Tweet): Tweet = {
-    
+
+  def descendingByRetweet: TweetList = {
+    descendingByRetweetAcc(this, Nil)
   }
+  
+  def descendingByRetweetAcc(tweets: TweetSet, acc:TweetList):TweetList = {
+    val t = tweets.remove(mostRetweeted)
+    t match {
+      case tail:Empty => acc
+      case tail:NonEmpty => tail.descendingByRetweetAcc(t, new Cons(mostRetweeted, acc)) 
+    }
+  }
+  
   /**
    * The following methods are already implemented
    */
