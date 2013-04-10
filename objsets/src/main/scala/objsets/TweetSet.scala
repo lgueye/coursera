@@ -139,19 +139,16 @@ class NonEmpty(elem: Tweet, left: TweetSet, right: TweetSet) extends TweetSet {
   def union(that: TweetSet): TweetSet = left.union(right.union(that)).incl(elem)
 
   def mostRetweeted: Tweet = {
-    def leftMostRetweeted = left.mostRetweeted
-      case Empty => right.filter(t => t.retweets > elem.retweets) match {
-        
-      }
-      case a:NonEmpty => a.filter(t => t.retweets > leftMostRetweeted.elem.retweets) match {
-        case Empty => elem
-        case b:NonEmpty =>  
-      }
-    }
-    def rightMostRetweeted = right.filter(t => t.retweets > elem.retweets)
-    if (elem.retweets > rightMostRetweeted.elem.retweets) elem else rightMostRetweeted.elem 
+    val evalLeft = left.mostRetweeted
+    val evalRight = right.mostRetweeted
+    if (evalLeft.retweets > evalRight.retweets && evalLeft.retweets > elem.retweets) evalLeft
+    else if (evalRight.retweets > evalLeft.retweets && evalRight.retweets > elem.retweets) evalRight
+    else elem
   }
-
+  
+  def mostRetweetedAcc(tweets:TweetSet, acc:Tweet): Tweet = {
+    
+  }
   /**
    * The following methods are already implemented
    */
