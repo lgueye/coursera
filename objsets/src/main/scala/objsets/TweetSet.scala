@@ -67,6 +67,8 @@ abstract class TweetSet {
    * and be implemented in the subclasses?
    */
   def mostRetweeted: Tweet
+  
+  def mostRetweetedAcc(acc: Tweet): Tweet
 
   /**
    * Returns a list containing all tweets of this set, sorted by retweet count
@@ -78,6 +80,8 @@ abstract class TweetSet {
    * and be implemented in the subclasses?
    */
   def descendingByRetweet: TweetList
+  
+  def descendingByRetweetAcc(acc: TweetList): TweetList
 
   /**
    * The following methods are already implemented
@@ -114,8 +118,12 @@ class Empty extends TweetSet {
   def union(that: TweetSet): TweetSet = that
 
   def mostRetweeted: Tweet = throw new NoSuchElementException
+
+  def mostRetweetedAcc(acc: Tweet): Tweet = acc
   
   def descendingByRetweet: TweetList = Nil
+  
+  def descendingByRetweetAcc(acc: TweetList): TweetList = acc
 
   /**
    * The following methods are already implemented
@@ -141,29 +149,24 @@ class NonEmpty(elem: Tweet, left: TweetSet, right: TweetSet) extends TweetSet {
   def union(that: TweetSet): TweetSet = left.union(right.union(that)).incl(elem)
 
   def mostRetweeted: Tweet = {
-    val evalLeft = left match {
-      case evalLeft:Empty => elem
-      case evalLeft:NonEmpty => left.mostRetweeted
-    }
-    val evalRight = right match {
-      case evalLeft:Empty => elem
-      case evalLeft:NonEmpty => right.mostRetweeted
-    }
-    if (evalLeft.retweets > evalRight.retweets && evalLeft.retweets > elem.retweets) evalLeft
-    else if (evalRight.retweets > evalLeft.retweets && evalRight.retweets > elem.retweets) evalRight
-    else elem
+    mostRetweetedAcc(elem)
   }
 
-  def descendingByRetweet: TweetList = {
-    descendingByRetweetAcc(this, Nil)
+  def mostRetweetedAcc(acc:Tweet): Tweet = {
+    val evalLeft = left.mostRetweetedAcc(acc)
+    val evalRight = right.mostRetweetedAcc(evalLeft)
+    if (evalRight.retweets > elem.retweets) evalRight else elem
   }
   
-  def descendingByRetweetAcc(tweets: TweetSet, acc:TweetList):TweetList = {
-    val t = tweets.remove(mostRetweeted)
-    t match {
-      case tail:Empty => acc
-      case tail:NonEmpty => tail.descendingByRetweetAcc(t, new Cons(mostRetweeted, acc)) 
-    }
+  def descendingByRetweet: TweetList = {
+    descendingByRetweetAcc(Nil)
+  }
+  
+  def descendingByRetweetAcc(acc:TweetList):TweetList = {
+    val evalLeft = left.descendingByRetweetAcc(acc)
+    val evalRight = right.descendingByRetweetAcc(evalLeft)
+    remove(mostRetweeted)
+    new Cons(mostRetweeted, evalRight) 
   }
   
   /**
