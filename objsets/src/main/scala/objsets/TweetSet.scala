@@ -58,7 +58,7 @@ abstract class TweetSet {
   def union(that: TweetSet): TweetSet
 
   /**
-   * Returns the tweet from this set which has the smallest retweet count.
+   * Returns the tweet from this set which has the highest retweet count.
    *
    * Calling `mostRetweeted` on an empty set should throw an exception of
    * type `java.util.NoSuchElementException`.
@@ -81,8 +81,6 @@ abstract class TweetSet {
    */
   def descendingByRetweet: TweetList
   
-  def descendingByRetweetAcc(acc: TweetList): TweetList
-
   /**
    * The following methods are already implemented
    */
@@ -122,8 +120,6 @@ class Empty extends TweetSet {
   def mostRetweetedAcc(acc: Tweet): Tweet = acc
   
   def descendingByRetweet: TweetList = Nil
-  
-  def descendingByRetweetAcc(acc: TweetList): TweetList = acc
 
   /**
    * The following methods are already implemented
@@ -158,16 +154,7 @@ class NonEmpty(elem: Tweet, left: TweetSet, right: TweetSet) extends TweetSet {
     if (evalRight.retweets > elem.retweets) evalRight else elem
   }
   
-  def descendingByRetweet: TweetList = {
-    descendingByRetweetAcc(Nil)
-  }
-  
-  def descendingByRetweetAcc(acc:TweetList):TweetList = {
-    val evalLeft = left.descendingByRetweetAcc(acc)
-    val evalRight = right.descendingByRetweetAcc(evalLeft)
-    remove(mostRetweeted)
-    new Cons(mostRetweeted, evalRight) 
-  }
+  def descendingByRetweet: TweetList = new Cons(mostRetweeted, remove(mostRetweeted).descendingByRetweet)
   
   /**
    * The following methods are already implemented
