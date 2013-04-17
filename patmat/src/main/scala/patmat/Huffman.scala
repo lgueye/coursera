@@ -81,7 +81,7 @@ object Huffman {
   
   def timesAcc(chars: List[Char], acc: List[(Char, Int)]): List[(Char, Int)] = {
     chars match {
-      case head::tail => timesAcc(tail, acc:::List((head,1)))
+      case head::tail => timesAcc(tail, (head,1)::acc)
       case Nil        => acc
     }
   }
