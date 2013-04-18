@@ -31,7 +31,11 @@ class HuffmanSuite extends FunSuite {
   }
 
   test("times") {
-    assert( List(('a',2), ('b',3), ('c',1), ('d',6)) === times(string2Chars("aabbbcdddddd")))
+    val result = times(string2Chars("aabbbcdddddd"))
+    assert (result.exists(tuple => tuple == ('a',2)))
+    assert (result.exists(tuple => tuple == ('b',3)))
+    assert (result.exists(tuple => tuple == ('c',1)))
+    assert (result.exists(tuple => tuple == ('d',6)))
   }
   
   test("makeOrderedLeafList for some frequency table") {

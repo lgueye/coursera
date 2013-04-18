@@ -77,15 +77,33 @@ object Huffman {
    *       println("integer is  : "+ theInt)
    *   }
    */
-  def times(chars: List[Char]): List[(Char, Int)] = timesAcc(chars, List())
+  def times(chars: List[Char]): List[(Char, Int)] = {
+    val freqs = timesAcc(chars, List())
+    freqs
+  }
   
+  /**
+   * Build a list of unit frequency that can appear many times in the list<br/> 
+   * Example: List((a,1), (a,1), (b,1) ...)
+   */
   def timesAcc(chars: List[Char], acc: List[(Char, Int)]): List[(Char, Int)] = {
     chars match {
-      case head::tail => timesAcc(tail, (head,1)::acc)
       case Nil        => acc
+      case head::tail => if (acc.exists {case (c,f) => c == head }) timesAcc(tail, acc) 
+      						else timesAcc(tail, charFrequency (head, chars)::acc) 
     }
   }
 
+  def charFrequency(char: Char, chars:List[Char]) = charFrequencyAcc(char, chars, 0)
+  
+  def charFrequencyAcc(char: Char, chars:List[Char], acc:Int): (Char, Int) = {
+    chars match {
+      case Nil 			=> (char,acc) 
+      case head::tail 	=> if (char == head) charFrequencyAcc(char, tail, acc+1) 
+      						else charFrequencyAcc(char, tail, acc)  
+    }
+  }
+  
   /**
    * Returns a list of `Leaf` nodes for a given frequency table `freqs`.
    *
