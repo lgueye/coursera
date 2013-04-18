@@ -37,9 +37,15 @@ class HuffmanSuite extends FunSuite {
     assert (result.exists(tuple => tuple == ('c',1)))
     assert (result.exists(tuple => tuple == ('d',6)))
   }
-  
+
   test("makeOrderedLeafList for some frequency table") {
     assert(makeOrderedLeafList(List(('t', 2), ('e', 1), ('x', 3))) === List(Leaf('e',1), Leaf('t',2), Leaf('x',3)))
+  }
+
+  test("singleton list") {
+    assert (!singleton(Nil))
+    assert (singleton( List(Leaf('a',5)) ))
+    assert (!singleton( List(Leaf('a',5), Leaf('a',5)) ))
   }
 
   test("combine of some leaf list") {
