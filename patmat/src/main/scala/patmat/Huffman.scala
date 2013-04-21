@@ -126,7 +126,7 @@ object Huffman {
    */
   def combine(trees: List[CodeTree]): List[CodeTree] = 
     if (trees.isEmpty || singleton(trees)) trees
-    else insert(makeCodeTree(trees.head, trees.tail.head), combine(trees.tail.tail))
+    else insert(makeCodeTree(trees.head, trees.tail.head), trees.tail.tail)
   
   def insert(x: CodeTree, xs: List[CodeTree]): List[CodeTree] = 
     if (xs.isEmpty || weight(x) <= weight(xs.head)) x :: xs

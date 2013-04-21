@@ -53,6 +53,17 @@ class HuffmanSuite extends FunSuite {
     assert(combine(leaflist) === List(Fork(Leaf('e',1),Leaf('t',2),List('e', 't'),3), Leaf('x',4)))
   }
 
+  test("combine of some leaf list 2") {
+    val leaflist = List(Leaf('e', 1), Leaf('v', 10), Leaf('t', 2), Leaf('x', 4))
+    assert(combine(leaflist) === List(Leaf('t',2), Leaf('x',4), Fork(Leaf('e',1),Leaf('v',10),List('e', 'v'),11)))
+  }
+  
+  test("combine of some leaf list 3") {
+    val leaflist = List(Leaf('b', 2), Leaf('c', 3), Leaf('d', 4), Leaf('f', 6), Leaf('g', 7))
+    assert(combine(leaflist) === List(Leaf('d',4), Fork(Leaf('b', 2), Leaf('c', 3), List('b', 'c'), 5), Leaf('f', 6), Leaf('g', 7)))
+  }
+  
+  
   test("encode t1 should succeed") {
     new TestTrees {
       assert(List(0,1) === encode(t1)("ab".toList))
