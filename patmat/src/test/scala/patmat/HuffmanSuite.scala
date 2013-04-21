@@ -53,9 +53,47 @@ class HuffmanSuite extends FunSuite {
     assert(combine(leaflist) === List(Fork(Leaf('e',1),Leaf('t',2),List('e', 't'),3), Leaf('x',4)))
   }
 
+  test("encode t1 should succeed") {
+    new TestTrees {
+      assert(List(0,1) === encode(t1)("ab".toList))
+    }
+  }
+  
+  test("encode t2 should succeed") {
+    new TestTrees {
+      assert(List(1, 0, 0, 0, 1) === encode(t2)("dab".toList))
+    }
+  }
+
+  test("decode t2 should succeed") {
+    new TestTrees {
+      assert("dab".toList === decode(t2,List(1, 0, 0, 0, 1)))
+    }
+  }
+  
   test("decode and encode a very short text should be identity") {
     new TestTrees {
       assert(decode(t1, encode(t1)("ab".toList)) === "ab".toList)
     }
   }
+  
+  test("codeBits should succeed") {
+    val bits = List(1,0,1,0)
+    val table = List(('a',List(0,1)),('b', List(0,0,1)),('c',bits),('d', List(1,1,1,0)))
+	assert(bits === codeBits(table)('c'))
+  }
+  
+  test("convert should succeed") {
+    new TestTrees {
+      val expected = List(('a', List(0,0)), ('b', List(0,1)), ('d',List(1)))
+	  assert(expected === convert(t2))
+    }
+  }
+ 
+  test("quickEncode t2 should succeed") {
+    new TestTrees {
+      assert(List(1, 0, 0, 0, 1) === quickEncode(t2)("dab".toList))
+    }
+  }
+  
 }
