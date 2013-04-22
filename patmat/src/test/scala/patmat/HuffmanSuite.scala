@@ -62,6 +62,11 @@ class HuffmanSuite extends FunSuite {
     val leaflist = List(Leaf('b', 2), Leaf('c', 3), Leaf('d', 4), Leaf('f', 6), Leaf('g', 7))
     assert(combine(leaflist) === List(Leaf('d',4), Fork(Leaf('b', 2), Leaf('c', 3), List('b', 'c'), 5), Leaf('f', 6), Leaf('g', 7)))
   }
+
+  test("until should reduce to a singleton") {
+    val leaflist = List(Leaf('b', 2), Leaf('c', 3), Leaf('d', 4), Leaf('f', 6), Leaf('g', 7))
+    assert(singleton(until(singleton, combine)(leaflist)))
+  }
   
   
   test("encode t1 should succeed") {

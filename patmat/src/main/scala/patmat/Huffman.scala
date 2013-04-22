@@ -79,23 +79,20 @@ object Huffman {
    * Build a list of unit frequency that can appear many times in the list<br/>
    * Example: List((a,1), (a,1), (b,1) ...)
    */
-  def timesAcc(chars: List[Char], acc: List[(Char, Int)]): List[(Char, Int)] = {
-    chars match {
-      case Nil => acc
-      case head :: tail => if (acc.exists { case (c, f) => c == head }) timesAcc(tail, acc)
-      else timesAcc(tail, charFrequency(head, chars) :: acc)
-    }
+  def timesAcc(chars: List[Char], acc: List[(Char, Int)]): List[(Char, Int)] = chars match {
+    case Nil => acc
+    case head :: tail => if (acc.exists { case (c, f) => c == head }) timesAcc(tail, acc)
+    else timesAcc(tail, charFrequency(head, chars) :: acc)
   }
 
   def charFrequency(char: Char, chars: List[Char]) = charFrequencyAcc(char, chars, 0)
 
-  def charFrequencyAcc(char: Char, chars: List[Char], acc: Int): (Char, Int) = {
-    chars match {
-      case Nil => (char, acc)
-      case head :: tail => if (char == head) charFrequencyAcc(char, tail, acc + 1)
-      else charFrequencyAcc(char, tail, acc)
-    }
+  def charFrequencyAcc(char: Char, chars: List[Char], acc: Int): (Char, Int) = chars match {
+    case Nil => (char, acc)
+    case head :: tail => if (char == head) charFrequencyAcc(char, tail, acc + 1)
+    else charFrequencyAcc(char, tail, acc)
   }
+  
 
   /**
    * Returns a list of `Leaf` nodes for a given frequency table `freqs`.
@@ -150,7 +147,7 @@ object Huffman {
    *  - try to find sensible parameter names for `xxx`, `yyy` and `zzz`.
    */
   def until(predicate: List[CodeTree] => Boolean, apply: List[CodeTree] => List[CodeTree])(trees: List[CodeTree]): List[CodeTree] =
-    if (predicate(trees)) trees else trees.head :: until(predicate, apply)(trees.tail)
+    if (predicate(trees)) trees else until(predicate, apply)(apply(trees))
 
   /**
    * This function creates a code tree which is optimal to encode the text `chars`.
@@ -260,8 +257,10 @@ object Huffman {
    */
   def quickEncode(tree: CodeTree)(text: List[Char]): List[Bit] = quickEncode(tree, Nil)(text)
 
-  def quickEncode(tree: CodeTree, acc: List[Bit])(text: List[Char]): List[Bit] = {val codeTable = convert(tree);text match {
-    case Nil => acc
-    case head :: tail => quickEncode(tree, acc ::: codeBits(codeTable)(head))(tail)
-  }}
+  def quickEncode(tree: CodeTree, acc: List[Bit])(text: List[Char]): List[Bit] = {
+    val codeTable = convert(tree);text match {
+      case Nil => acc
+      case head :: tail => quickEncode(tree, acc ::: codeBits(codeTable)(head))(tail)
+    }
+  }
 }
