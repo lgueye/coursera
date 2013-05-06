@@ -49,8 +49,6 @@ class AnagramsSuite extends FunSuite {
     assert(subtract(lard, r) === lad)
   }
 
-
-
   test("combinations: []") {
     assert(combinations(Nil) === List(Nil))
   }
@@ -71,13 +69,75 @@ class AnagramsSuite extends FunSuite {
     assert(combinations(abba).toSet === abbacomb.toSet)
   }
 
-
+  test("combinations: abccbac") {
+    val abccbac = List(('a', 2), ('b', 2), ('c', 3))
+    val abccbacomb = List(
+      List(),
+      List(('a', 1)),
+      List(('a', 2)),
+      List(('b', 1)),
+      List(('b', 2)),
+      List(('c', 1)),
+      List(('c', 2)),
+      List(('c', 3)),
+      List(('a', 1), ('b', 1)),
+      List(('a', 1), ('b', 2)),
+      List(('a', 1), ('c', 1)),
+      List(('a', 1), ('c', 2)),
+      List(('a', 1), ('c', 3)),
+      List(('a', 2), ('b', 1)),
+      List(('a', 2), ('b', 2)),
+      List(('a', 2), ('c', 1)),
+      List(('a', 2), ('c', 2)),
+      List(('a', 2), ('c', 3)),
+      List(('b', 1), ('c', 1)),
+      List(('b', 1), ('c', 2)),
+      List(('b', 1), ('c', 3)),
+      List(('b', 2), ('c', 1)),
+      List(('b', 2), ('c', 2)),
+      List(('b', 2), ('c', 3)),
+      List(('a', 1), ('b', 1), ('c', 1)),
+      List(('a', 1), ('b', 1), ('c', 2)),
+      List(('a', 1), ('b', 1), ('c', 3)),
+      List(('a', 2), ('b', 1), ('c', 1)),
+      List(('a', 2), ('b', 1), ('c', 2)),
+      List(('a', 2), ('b', 1), ('c', 3)),
+      List(('a', 1), ('b', 2), ('c', 1)),
+      List(('a', 1), ('b', 2), ('c', 2)),
+      List(('a', 1), ('b', 2), ('c', 3)),
+      List(('a', 2), ('b', 2), ('c', 1)),
+      List(('a', 2), ('b', 2), ('c', 2)),
+      List(('a', 2), ('b', 2), ('c', 3))
+    )
+    assert(combinations(abccbac).toSet === abccbacomb.toSet)
+  }
 
   test("sentence anagrams: []") {
     val sentence = List()
     assert(sentenceAnagrams(sentence) === List(Nil))
   }
 
+  test("sentence anagrams: Yes man") {
+    val sentence = List("Yes", "man")
+    val anas = List(
+      List("en", "as", "my"),
+      List("en", "my", "as"),
+      List("man", "yes"),
+      List("men", "say"),
+      List("as", "en", "my"),
+      List("as", "my", "en"),
+      List("sane", "my"),
+      List("Sean", "my"),
+      List("my", "en", "as"),
+      List("my", "as", "en"),
+      List("my", "sane"),
+      List("my", "Sean"),
+      List("say", "men"),
+      List("yes", "man")
+    )
+    assert(sentenceAnagrams(sentence).toSet === anas.toSet)
+  }  
+  
   test("sentence anagrams: Linux rulez") {
     val sentence = List("Linux", "rulez")
     val anas = List(

@@ -94,7 +94,17 @@ object Anagrams {
    *  Note that the order of the occurrence list subsets does not matter -- the subsets
    *  in the example above could have been displayed in some other order.
    */
-  def combinations(occurrences: Occurrences): List[Occurrences] = ???
+  def combinations(occurrences: Occurrences): List[Occurrences] = combinationsAcc(occurrences, List(Nil))
+  
+  def combinationsAcc(occurrences: Occurrences, acc: List[Occurrences]): List[Occurrences] = occurrences match {
+    case Nil 		=> acc
+    case head::tail	=> {
+      val pairs = for (i <- 1 to head._2) yield ((head._1, i))
+      val combos = pairs.flatMap(y => acc.map(x => (y::x).sortWith((p1, p2) => p1._1 < p2._1)))
+      combinationsAcc(tail, acc ::: combos.toList)
+    }
+  }
+    
 
   /** Subtracts occurrence list `y` from occurrence list `x`.
    * 
@@ -106,7 +116,7 @@ object Anagrams {
    *  Note: the resulting value is an occurrence - meaning it is sorted
    *  and has no zero-entries.
    */
-  def subtract(x: Occurrences, y: Occurrences): Occurrences = ???
+  def subtract(x: Occurrences, y: Occurrences): Occurrences = x.filter(w => !y.contains(w))
 
   /** Returns a list of all anagram sentences of the given sentence.
    *  
@@ -148,6 +158,17 @@ object Anagrams {
    *
    *  Note: There is only one anagram of an empty sentence.
    */
-  def sentenceAnagrams(sentence: Sentence): List[Sentence] = ???
-
+  def sentenceAnagrams(sentence: Sentence): List[Sentence] = {
+    val anagramDictionnary = for (occurrence <- combinations(sentenceOccurrences(sentence))) yield dictionaryByOccurrences.get(occurrence) match {
+      case None => Nil
+      case Some(sentence) => sentence
+    }
+    flatten(anagramDictionnary).combinations(3).filter(s => sentenceOccurrences(s) == sentenceOccurrences(sentences))
+  }
+  
+  def flatten(xs: List[Any]): List[Any] = xs match {
+    case Nil => Nil
+    case (head: List[_]) :: tail => flatten(head) ++ flatten(tail)
+    case head :: tail => head :: flatten(tail)
+  }
 }
