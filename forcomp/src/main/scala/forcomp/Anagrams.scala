@@ -163,12 +163,57 @@ object Anagrams {
       case None => Nil
       case Some(sentence) => sentence
     }
-    flatten(anagramDictionnary).combinations(3).filter(s => sentenceOccurrences(s) == sentenceOccurrences(sentences))
+//    println ("Group words by length ============================================================")
+    val wordsByLength = anagramDictionnary.flatten.toSet.toList.sorted.groupBy(x=> x.length)
+//    println (wordsByLength)
+//    println ("Extract lengths ==================================================================")
+    val lengths = wordsByLength.keySet
+//    println (lengths.toList)
+//    println ("Find every possible length combinations that match sentence length  ==============")
+    val lengthCombinations = sumCombinations(sentence.flatMap(w => w).size, lengths.toList)
+//    println(lengthCombinations)
+//    println ("Find every possible list combinations from lengths combinations")
+    val wordsCombinations = wordCombinations(lengthCombinations, wordsByLength, List(Nil))
+    //println(wordsCombinations)
+//    println ("Filter sentences by occurence")
+    val anagrams = wordsCombinations.filter(s => sentenceOccurrences(s) == sentenceOccurrences(sentence))
+    anagrams
   }
   
-  def flatten(xs: List[Any]): List[Any] = xs match {
-    case Nil => Nil
-    case (head: List[_]) :: tail => flatten(head) ++ flatten(tail)
-    case head :: tail => head :: flatten(tail)
+  def wordCombinations(lengthCombinations: List[List[Int]], wordsByLength: Map[Int, List[String]], solutions:List[Sentence]): List[Sentence] = lengthCombinations match {
+    case Nil 			=> solutions
+    case head :: tail 	=> { 
+      val wordLists = head.map(x => wordsByLength(x))
+//      println ("Handling head ==================================================================")
+//      println (head)
+      val cp = cartesianProduct(wordLists) 
+      wordCombinations(tail, wordsByLength, (cp ++ solutions).toSet.toList)
+    }
   }
+
+  def cartesianProduct[T](xss: List[List[T]]): List[List[T]] = xss match {
+    case Nil => List(Nil)
+    case h :: t => for(xh <- h; xt <- cartesianProduct(t)) yield xh :: xt
+  }
+  
+  def sumCombinations(total: Int, numbers: List[Int]): List[List[Int]] = {
+
+    def add(x: (Int, List[List[Int]]), y: (Int, List[List[Int]])): (Int, List[List[Int]]) = {
+      (x._1 + y._1, x._2 ::: y._2)
+    }
+
+    def sumCombinations(resultAcc: List[List[Int]], sumAcc: List[Int], total: Int, numbers: List[Int]): (Int, List[List[Int]]) = {
+      if (numbers.isEmpty || total < 0) {
+        (0, resultAcc)
+      } else if (total == 0) {
+        (1, sumAcc :: resultAcc)
+      } else {
+        add(sumCombinations(resultAcc, sumAcc, total, numbers.tail), sumCombinations(resultAcc, numbers.head :: sumAcc, total - numbers.head, numbers))
+      }
+    }
+
+    sumCombinations(Nil, Nil, total, numbers.sortWith(_ > _))._2
+  }
+
+
 }
