@@ -44,7 +44,7 @@ object Anagrams {
     .sortWith( (x, y) => x._1 < y._1)
 
   /** Converts a sentence into its character occurrence list. */
-  def sentenceOccurrences(s: Sentence): Occurrences = s.flatMap(w => wordOccurrences(w))
+  def sentenceOccurrences(s: Sentence): Occurrences = s.flatMap(w => wordOccurrences(w)).sortWith((p1, p2) => p1._1 < p2._1)
 
   /** The `dictionaryByOccurrences` is a `Map` from different occurrences to a sequence of all
    *  the words that have that occurrence count.
@@ -163,19 +163,10 @@ object Anagrams {
       case None => Nil
       case Some(sentence) => sentence
     }
-//    println ("Group words by length ============================================================")
     val wordsByLength = anagramDictionnary.flatten.toSet.toList.sorted.groupBy(x=> x.length)
-//    println (wordsByLength)
-//    println ("Extract lengths ==================================================================")
     val lengths = wordsByLength.keySet
-//    println (lengths.toList)
-//    println ("Find every possible length combinations that match sentence length  ==============")
     val lengthCombinations = sumCombinations(sentence.flatMap(w => w).size, lengths.toList)
-//    println(lengthCombinations)
-//    println ("Find every possible list combinations from lengths combinations")
     val wordsCombinations = wordCombinations(lengthCombinations, wordsByLength, List(Nil))
-    //println(wordsCombinations)
-//    println ("Filter sentences by occurence")
     val anagrams = wordsCombinations.filter(s => sentenceOccurrences(s) == sentenceOccurrences(sentence))
     anagrams
   }
@@ -184,8 +175,6 @@ object Anagrams {
     case Nil 			=> solutions
     case head :: tail 	=> { 
       val wordLists = head.map(x => wordsByLength(x))
-//      println ("Handling head ==================================================================")
-//      println (head)
       val cp = cartesianProduct(wordLists) 
       wordCombinations(tail, wordsByLength, (cp ++ solutions).toSet.toList)
     }
