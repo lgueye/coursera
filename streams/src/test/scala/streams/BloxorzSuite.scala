@@ -63,7 +63,7 @@ class BloxorzSuite extends FunSuite {
     }
   }
   
-  test("isLegal level 1, start position") {
+  test("isLegal level 1") {
     new Level1 {
       assert(startBlock.isLegal)
       assert(!startBlock.left.isLegal)
@@ -73,7 +73,7 @@ class BloxorzSuite extends FunSuite {
     }
   }
 
-  test("neighbors level 1, start position") {
+  test("neighbors level 1") {
     new Level1 {
       assert(startBlock.isLegal)
       assert(startBlock.neighbors.contains(startBlock.left, Left))
@@ -83,7 +83,7 @@ class BloxorzSuite extends FunSuite {
     }
   }
 
-  test("legal neighbors level 1, start position") {
+  test("legal neighbors level 1") {
     new Level1 {
       assert(startBlock.isLegal)
       assert(!startBlock.legalNeighbors.contains(startBlock.left, Left))
@@ -92,6 +92,21 @@ class BloxorzSuite extends FunSuite {
       assert(startBlock.legalNeighbors.contains(startBlock.down, Down))
     }
   }
+
+  test("done level 1") {
+    new Level1 {
+      assert(done(Block(goal, goal)))
+    }
+  }
+
+  test("neighborsWithHistory level 1") {
+    new Level1 {
+      val expected = Set((Block(Pos(1,2),Pos(1,3)), List(Right,Left,Up)),(Block(Pos(2,1),Pos(3,1)), List(Down,Left,Up)))
+      val actual = neighborsWithHistory(Block(Pos(1,1),Pos(1,1)), List(Left,Up)).toSet
+      assert(expected == actual)
+    }
+  }
+  
   
   test("optimal solution for level 1") {
     new Level1 {
