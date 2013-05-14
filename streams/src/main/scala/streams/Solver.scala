@@ -39,7 +39,7 @@ trait Solver extends GameDef {
    * make sure that we don't explore circular paths.
    */
   def newNeighborsOnly(neighbors: Stream[(Block, List[Move])],
-                       explored: Set[Block]): Stream[(Block, List[Move])] = ???
+                       explored: Set[Block]): Stream[(Block, List[Move])] = neighbors.filter(tuple => !explored.contains(tuple._1))
 
   /**
    * The function `from` returns the stream of all possible paths
