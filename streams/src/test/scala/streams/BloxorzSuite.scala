@@ -53,6 +53,46 @@ class BloxorzSuite extends FunSuite {
     }
   }
 
+  test("isStanding level 1") {
+    new Level1 {
+      assert(startBlock.isStanding)
+      assert(!startBlock.left.isStanding)
+      assert(!startBlock.up.isStanding)
+      assert(!startBlock.right.isStanding)
+      assert(!startBlock.down.isStanding)
+    }
+  }
+  
+  test("isLegal level 1, start position") {
+    new Level1 {
+      assert(startBlock.isLegal)
+      assert(!startBlock.left.isLegal)
+      assert(!startBlock.up.isLegal)
+      assert(startBlock.right.isLegal)
+      assert(startBlock.down.isLegal)
+    }
+  }
+
+  test("neighbors level 1, start position") {
+    new Level1 {
+      assert(startBlock.isLegal)
+      assert(startBlock.neighbors.contains(startBlock.left, Left))
+      assert(startBlock.neighbors.contains(startBlock.right, Right))
+      assert(startBlock.neighbors.contains(startBlock.up, Up))
+      assert(startBlock.neighbors.contains(startBlock.down, Down))
+    }
+  }
+
+  test("legal neighbors level 1, start position") {
+    new Level1 {
+      assert(startBlock.isLegal)
+      assert(!startBlock.legalNeighbors.contains(startBlock.left, Left))
+      assert(startBlock.legalNeighbors.contains(startBlock.right, Right))
+      assert(!startBlock.legalNeighbors.contains(startBlock.up, Up))
+      assert(startBlock.legalNeighbors.contains(startBlock.down, Down))
+    }
+  }
+  
   test("optimal solution for level 1") {
     new Level1 {
       assert(solve(solution) == Block(goal, goal))
