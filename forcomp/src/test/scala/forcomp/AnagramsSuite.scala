@@ -26,11 +26,6 @@ class AnagramsSuite extends FunSuite {
     assert(sentenceOccurrences(List("abcd", "bce")) === List(('a', 1), ('b', 2), ('c', 2), ('d', 1), ('e', 1)))
   }
 
-  test("wordOccurrencesTuple: Zulu") {
-    assert(List(('l', 1), ('u', 2), ('z', 1)) == wordOccurrences("Zulu"))
-    assert(wordOccurrencesTuple.contains( (wordOccurrences("Zulu"), "Zulu") ))
-  }
-  
   test("dictionaryByOccurrences.get: eat") {
     assert(dictionaryByOccurrences.get(List(('a', 1), ('e', 1), ('t', 1))).map(_.toSet) === Some(Set("ate", "eat", "tea")))
   }
