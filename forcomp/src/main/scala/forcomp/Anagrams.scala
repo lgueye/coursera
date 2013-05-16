@@ -44,7 +44,7 @@ object Anagrams {
     .sortWith( (x, y) => x._1 < y._1)
 
   /** Converts a sentence into its character occurrence list. */
-  def sentenceOccurrences(s: Sentence): Occurrences = s.flatMap(w => wordOccurrences(w)).sortWith((p1, p2) => p1._1 < p2._1)
+  def sentenceOccurrences(s: Sentence): Occurrences = wordOccurrences(s.mkString)
 
   /** The `dictionaryByOccurrences` is a `Map` from different occurrences to a sequence of all
    *  the words that have that occurrence count.
@@ -61,11 +61,10 @@ object Anagrams {
    *    List(('a', 1), ('e', 1), ('t', 1)) -> Seq("ate", "eat", "tea")
    *
    */
-  lazy val dictionaryByOccurrences: Map[Occurrences, List[Word]] = loadDictionary
-  .map(w => (wordOccurrences(w), w))
-  .groupBy(pair => pair._1)
-  .map(p => (p._1, p._2.map(x => x._2)))
+  lazy val dictionaryByOccurrences: Map[Occurrences, List[Word]] = dictionary.groupBy(w => wordOccurrences(w))
 
+  lazy val wordOccurrencesTuple: List[(Occurrences, Word)] = loadDictionary.map(w => (wordOccurrences(w), w))  
+  	
   /** Returns all the anagrams of a given word. */
   def wordAnagrams(word: Word): List[Word] = dictionaryByOccurrences.get(wordOccurrences(word)) match {
     case None => Nil
@@ -98,13 +97,12 @@ object Anagrams {
   
   def combinationsAcc(occurrences: Occurrences, acc: List[Occurrences]): List[Occurrences] = occurrences match {
     case Nil 		=> acc
-    case head::tail	=> {
+    case head :: tail	=> {
       val pairs = for (i <- 1 to head._2) yield ((head._1, i))
-      val combos = pairs.flatMap(y => acc.map(x => (y::x).sortWith((p1, p2) => p1._1 < p2._1)))
+      val combos = pairs.flatMap(y => acc.map(x => (y :: x).sortWith((p1, p2) => p1._1 < p2._1)))
       combinationsAcc(tail, acc ::: combos.toList)
     }
   }
-    
 
   /** Subtracts occurrence list `y` from occurrence list `x`.
    * 
@@ -116,7 +114,8 @@ object Anagrams {
    *  Note: the resulting value is an occurrence - meaning it is sorted
    *  and has no zero-entries.
    */
-  def subtract(x: Occurrences, y: Occurrences): Occurrences = x.filter(w => !y.contains(w))
+  def subtract(x: Occurrences, y: Occurrences): Occurrences =
+    y.foldLeft(x.toMap) { (acc, occ) => acc.updated(occ._1, acc(occ._1) - occ._2) }.toList.filter(_._2 != 0)
 
   /** Returns a list of all anagram sentences of the given sentence.
    *  
@@ -158,51 +157,17 @@ object Anagrams {
    *
    *  Note: There is only one anagram of an empty sentence.
    */
-  def sentenceAnagrams(sentence: Sentence): List[Sentence] = {
-    val anagramDictionnary = for (occurrence <- combinations(sentenceOccurrences(sentence))) yield dictionaryByOccurrences.get(occurrence) match {
-      case None => Nil
-      case Some(sentence) => sentence
-    }
-    val wordsByLength = anagramDictionnary.flatten.toSet.toList.sorted.groupBy(x=> x.length)
-    val lengths = wordsByLength.keySet
-    val lengthCombinations = sumCombinations(sentence.flatMap(w => w).size, lengths.toList)
-    val wordsCombinations = wordCombinations(lengthCombinations, wordsByLength, List(Nil))
-    val anagrams = wordsCombinations.filter(s => sentenceOccurrences(s) == sentenceOccurrences(sentence))
-    anagrams
-  }
-  
-  def wordCombinations(lengthCombinations: List[List[Int]], wordsByLength: Map[Int, List[String]], solutions:List[Sentence]): List[Sentence] = lengthCombinations match {
-    case Nil 			=> solutions
-    case head :: tail 	=> { 
-      val wordLists = head.map(x => wordsByLength(x))
-      val cp = cartesianProduct(wordLists) 
-      wordCombinations(tail, wordsByLength, (cp ++ solutions).toSet.toList)
+  def sentenceAnagrams(sentence: Sentence): List[Sentence] = sentenceAnagramsR(sentenceOccurrences(sentence), Nil)
+
+  def sentenceAnagramsR(occurences: Occurrences, acc: Sentence): List[Sentence] = occurences match {
+    case Nil => List(acc)
+    case _ => {
+      for {
+        comb <- combinations(occurences)
+        word <- dictionaryByOccurrences.get(comb).getOrElse(Nil)
+        sentence <- sentenceAnagramsR(subtract(occurences, comb), word :: acc)
+      } yield sentence
     }
   }
-
-  def cartesianProduct[T](xss: List[List[T]]): List[List[T]] = xss match {
-    case Nil => List(Nil)
-    case h :: t => for(xh <- h; xt <- cartesianProduct(t)) yield xh :: xt
-  }
-  
-  def sumCombinations(total: Int, numbers: List[Int]): List[List[Int]] = {
-
-    def add(x: (Int, List[List[Int]]), y: (Int, List[List[Int]])): (Int, List[List[Int]]) = {
-      (x._1 + y._1, x._2 ::: y._2)
-    }
-
-    def sumCombinations(resultAcc: List[List[Int]], sumAcc: List[Int], total: Int, numbers: List[Int]): (Int, List[List[Int]]) = {
-      if (numbers.isEmpty || total < 0) {
-        (0, resultAcc)
-      } else if (total == 0) {
-        (1, sumAcc :: resultAcc)
-      } else {
-        add(sumCombinations(resultAcc, sumAcc, total, numbers.tail), sumCombinations(resultAcc, numbers.head :: sumAcc, total - numbers.head, numbers))
-      }
-    }
-
-    sumCombinations(Nil, Nil, total, numbers.sortWith(_ > _))._2
-  }
-
 
 }
