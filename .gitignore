@@ -6,5 +6,11 @@
 *idea
 target
 *.log
-
+.metadata
+lib*
+project
 .cache
+*.sbt
+*.jar
+quickcheck/project
+
